@@ -38,7 +38,7 @@
     <script>
       async function fetchPosts() {
         try {
-          const response = await fetch("http://localhost:3000/listar");
+          const response = await fetch("/listar");
           if (!response.ok) {
             throw new Error("Falha ao carregar os emails");
           }
