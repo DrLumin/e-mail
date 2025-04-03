@@ -13,6 +13,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Rota para servir o arquivo index.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "view", "index.html"));
+});
+
 app.get("/home", (req, res) => {
   res.sendFile(path.join(__dirname, "view", "index.html"));
 });
