@@ -1,42 +1,3 @@
-// const db = require("./db");
-
-// const Post = db.sequelize.define(
-//   "emails",
-//   {
-//     recipient: {
-//       type: db.Sequelize.STRING,
-//       allowNull: false,
-//     },
-//     subject: {
-//       type: db.Sequelize.STRING,
-//       allowNull: false,
-//     },
-//     body: {
-//       type: db.Sequelize.TEXT,
-//       allowNull: false,
-//     },
-//   },
-//   {
-//     timestamps: false,
-//   }
-// );
-
-// Post.sync()
-//   .then(() => {
-//     console.log("Tabela de emails criada com sucesso.");
-//   })
-//   .catch((erro) => {
-//     console.error("Erro ao criar a tabela de emails:", erro);
-//   });
-
-
-
-
-
-
-// module.exports = Post;
-
-
 const db = require("./db");
 
 const Post = db.sequelize.define(
@@ -60,8 +21,7 @@ const Post = db.sequelize.define(
   }
 );
 
-// Certificando-se de que a tabela exista (sem recriar se já existir)
-Post.sync({ alter: true })
+Post.sync()
   .then(() => {
     console.log("Tabela de emails criada com sucesso.");
   })

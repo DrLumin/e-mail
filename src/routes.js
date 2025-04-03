@@ -1,59 +1,64 @@
+// Importação dos módulos necessários
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const Post = require("../models/Posts");
-const { sendEmailAndSavePost } = require("./controllers/emailService");
+const { sendMail } = require("./controllers/mail");
 const { listar } = require("./controllers/listar");
 
 const app = express();
 
+// Middleware para processar JSON e dados de formulários
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-//////////////////////////////////////////////////////////////
-app.get("/", (req, res) => {
+// Rota para servir o arquivo index.html
+app.get("/home", (req, res) => {
   res.sendFile(path.join(__dirname, "view", "index.html"));
 });
 
+app.get("/email", (req, res) => {
+  res.sendFile(path.join(__dirname, "view", "enviarEmail.html"));
+});
+
+// Rota para enviar e-mail
+app.post("/send", sendMail);
+
+// Rota para enviar e-mail e salvar no banco de dados
+app.post("/enviar", (req, res) => {
+  const { recipient, subject, body } = req.body;
+
+  // Criação do e-mail no banco de dados
+  Post.create({
+    recipient: recipient,
+    subject: subject,
+    body: body,
+  })
+    .then(async function () {
+      try {
+        // Criação do objeto emailData
+        const emailData = { recipient, subject, body };
+
+        // Envio do e-mail
+        await sendMail(emailData);
+
+        res.status(200).send("Envio de E-mail com sucesso");
+      } catch (error) {
+        res.status(500).send("Erro ao enviar o e-mail: " + error.message);
+      }
+    })
+    .catch(function (erro) {
+      res.status(500).send("Houve um erro no envio: " + erro.message);
+    });
+});
+
+// Rota para listar os dados
+app.get("/listar", listar);
+
+// Rota para exibir a página de consulta
 app.get("/consulta", (req, res) => {
   res.sendFile(path.join(__dirname, "view", "consulta.html"));
 });
 
-app.get("/email", (req, res) => {
-  res.sendFile(path.join(__dirname, "view", "envEmail.html"));
-});
-
-app.get("/agendamento", (req, res) => {
-  res.sendFile(path.join(__dirname, "view", "agendar.html"));
-});
-
-////////////////////////////API//////////////////////////////
-
-app.post("/enviar", async (req, res) => {
-  const { recipient, subject, body } = req.body;
-  await sendEmailAndSavePost(recipient, subject, body, res);
-});
-
-app.post("/agendar", (req, res) => {
-  const { schedule } = req.body; // Recebe o padrão de tempo do body
-
-  if (!schedule || !cron.validate(schedule)) {
-    return res.status(400).json({ error: "Formato de cron inválido" });
-  }
-
-  // Se já existir um agendamento, cancela antes de criar outro
-  if (agendamento) {
-    agendamento.stop();
-  }
-
-  agendamento = cron.schedule(schedule, () => {
-    console.log(`Tarefa executada no cron: ${schedule}`);
-  });
-
-  agendamento.start();
-  res.json({ message: `Tarefa agendada para ${schedule}` });
-});
-
-app.get("/listar", listar);
-
+// Exportando a aplicação
 module.exports = app;
