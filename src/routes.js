@@ -1,120 +1,45 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Formulário de Contato</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-  </head>
+const express = require("express");
+const path = require("path");
+const bodyParser = require("body-parser");
+const Post = require("../models/Posts");
+const { sendEmailAndSavePost } = require("./controllers/emailService");
+const { listar } = require("./controllers/listar");
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #6f42c1;">
-      <div class="container">
-        <a class="navbar-brand fw-bold" href="/">E-Casa</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link text-white" href="/email">E-mail</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-white" href="/consulta">Consultar</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-white" href="/agendar">Agendar</a>
-            </li>
-            <li class="nav-item">
-             
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <div class="container mt-5">
-      <h2>Formulário de E-mail</h2>
 
-      <form id="emailForm" action="/email" method="POST">
-        <div class="mb-3">
-          <label for="recipient" class="form-label">Para:</label>
-          <input
-            type="email"
-            class="form-control"
-            id="recipient"
-            name="recipient"
-            required
-          />
-        </div>
 
-        <div class="mb-3">
-          <label for="subject" class="form-label">Assunto:</label>
-          <input
-            type="text"
-            class="form-control"
-            id="subject"
-            name="subject"
-            required
-          />
-        </div>
 
-        <div class="mb-3">
-          <label for="body" class="form-label">Conteúdo:</label>
-          <textarea
-            class="form-control"
-            id="body"
-            name="body"
-            rows="4"
-            required
-          ></textarea>
-        </div>
 
-        <button type="submit" class="btn btn-primary">Enviar</button>
-      </form>
-    </div>
+const app = express();
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-    <script>
-      // Captura do formulário
-      document
-        .getElementById("emailForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
+//////////////////////////////////////////////////////////////
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "view", "index.html"));
+});
 
-          const emailData = {
-            recipient: document.getElementById("recipient").value,
-            subject: document.getElementById("subject").value,
-            body: document.getElementById("body").value,
-          };
+app.get("/consulta", (req, res) => {
+  res.sendFile(path.join(__dirname, "view", "consulta.html"));
+});
 
-          fetch("/enviar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(emailData),
-          })
-            .then(async (response) => {
-              const data = await response.json();
-              if (!response.ok)
-                throw new Error(data.error || "Erro desconhecido");
-              alert(data.message);
-              if (data.redirectTo) window.location.href = data.redirectTo;
-            })
-            .catch((error) =>
-              alert("Erro ao enviar o e-mail: " + error.message)
-            );
-        });
-    </script>
-  </body>
-</html>
+app.get("/email", (req, res) => {
+  res.sendFile(path.join(__dirname, "view", "envEmail.html"));
+});
+
+app.get("/agendar", (req, res) => {
+  res.sendFile(path.join(__dirname, "view", "agendar.html"));
+})
+
+////////////////////////////API//////////////////////////////
+
+app.post("/enviar", async (req, res) => {
+  const { recipient, subject, body } = req.body;
+  await sendEmailAndSavePost(recipient, subject, body, res);
+});
+
+
+
+app.get("/listar", listar);
+
+module.exports = app;
