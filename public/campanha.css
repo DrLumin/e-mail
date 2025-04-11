@@ -1,0 +1,17 @@
+h1 {
+    text-align: center;
+    /* Centraliza o texto horizontalmente */
+    font-size: 2rem;
+    /* Tamanho da fonte, ajuste conforme necessário */
+    color: #333;
+    /* Cor do texto, ajuste conforme necessário */
+}
+
+
+
+h1 {
+    text-align: center;
+    /* Centraliza o conteúdo dentro do contêiner */
+    padding-top: 30vh;
+    padding-bottom: 50px;
+}

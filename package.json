@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "body": "^5.1.0",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "juice": "^11.0.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.14.0",
+    "nodemailer": "^6.10.0",
+    "nodemon": "^3.1.9",
+    "parser": "^0.1.4",
+    "sanitize-html": "^2.15.0",
+    "sequelize": "^6.37.6"
+  },
+  "name": "e-mail",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
